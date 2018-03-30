@@ -1,0 +1,16 @@
+<!--index.wxml-->
+<view class="{{BleConnectStatus==false?'SearchLayout':'HideLayout'}}">
+  <button bindtap='点击搜索蓝牙设备'>搜索蓝牙设备</button>
+  <block wx:for="{{BleDevices}}" wx:key="RSSI">
+    <view class='ShowSearchDevice' data-numid="{{index}}" bindtap='点击指定设备'>
+      <text class='DeviceText1'>设备名:{{item.name}}</text>
+      <view class='ShowSearchDevice2'>
+        <text class='DeviceText2'>设备Mac:{{item.deviceId}}</text>
+        <text class='DeviceText2'>RSSI:{{item.RSSI}}</text>  
+      </view>
+    </view>
+  </block>
+</view>
+<view class="{{BleConnectStatus==true?'SearchLayout':'HideLayout'}}">
+
+</view>
