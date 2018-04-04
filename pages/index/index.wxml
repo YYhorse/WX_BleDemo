@@ -12,5 +12,16 @@
   </block>
 </view>
 <view class="{{BleConnectStatus==true?'SearchLayout':'HideLayout'}}">
-
+  <view class='ShowSearchDevice2'>
+    <text class='DeviceText2'>通知服务UUID:{{notifyServicweId}}</text>
+    <text class='DeviceText2'>通知服务特征值:{{notifyCharacteristicsId}}</text>  
+  </view>
+  <view class='ShowSearchDevice2'>
+    <text class='DeviceText2'>写服务UUID:{{writeServicweId}}</text>
+    <text class='DeviceText2'>写服务特征值:{{writeCharacteristicsId}}</text>  
+  </view>
+  <view class='ShowSearchDevice2'>
+    <text class='DeviceText2'>读服务UUID:{{readServicweId}}</text>
+    <text class='DeviceText2'>读服务特征值:{{readCharacteristicsId}}</text>  
+  </view>
 </view>

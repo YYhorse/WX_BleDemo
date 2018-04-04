@@ -3,11 +3,17 @@ Page({
   data: {
     BleConnectStatus:false,
     BleDevices:[],
-    ConnectDevices:null,      //已连接设备信息
+    ConnectDevices:null,            //已连接设备信息
+    BleServices: "",                //连接设备的服务  
+    
+    writeServicweId: "",            //可写服务uuid  
+    writeCharacteristicsId: "",     //可写特征值uuid  
+    readServicweId: "",             //可读服务uuid  
+    readCharacteristicsId: "",      //可读特征值uuid  
+    notifyServicweId: "",           //通知服务UUid  
+    notifyCharacteristicsId: "",    //通知特征值UUID  
   },
-  onLoad: function () {
-   
-  },
+  // onLoad: function () {},
   点击搜索蓝牙设备: function () {
     this.开启蓝牙连接();
   },
@@ -97,9 +103,7 @@ Page({
       console.log('发现新蓝牙设备:')
       console.log(res.devices[0]);
       that.data.BleDevices.push(res.devices[0]);
-      that.setData({
-        BleDevices: that.data.BleDevices
-      })
+      that.setData({  BleDevices: that.data.BleDevices  })
     })
   },
   点击指定设备:function(e){
@@ -124,12 +128,16 @@ Page({
         {isPrimary: true, uuid: "0000180A-0000-1000-8000-00805F9B34FB"}
         */
         wx.getBLEDeviceServices({
-          deviceId: that.data.BleDevices[Index].deviceId,
+          deviceId: that.data.ConnectDevices.deviceId,
           success: function (res) {
-            console.log('device services:', res.services)
+            wx.showToast({  title: '连接成功!'  })
+            console.log('蓝牙服务:', res.services)
+            that.data.BleServices = res.services;
+            that.setData({ BleServices: that.data.BleServices })
+            that.获取指定蓝牙特征值();
           },
           fail: function (res) {
-            // fail
+            // fail1
             wx.hideLoading();
             console.log('获取蓝牙服务失败')
           },
@@ -147,6 +155,45 @@ Page({
       }
     })  
   },
+  获取指定蓝牙特征值:function(){
+    var that = this;
+    for (var i = 0; i < that.data.ConnectDevices.advertisServiceUUIDs.length;i++){
+      wx.getBLEDeviceCharacteristics({
+        deviceId: that.data.ConnectDevices.deviceId,
+        serviceId: that.data.ConnectDevices.advertisServiceUUIDs[i],
+        success: function (res) {
+          console.log(res.characteristics);
+          // for (var i = 0; i < res.characteristics.length; i++) {
+          //   if (res.characteristics[i].properties.notify) {
+          //     console.log("11111111", that.data.BleServices[0].uuid);
+          //     console.log("22222222222222222", res.characteristics[i].uuid);
+          //     that.setData({
+          //       notifyServicweId: that.data.BleServices[0].uuid,
+          //       notifyCharacteristicsId: res.characteristics[i].uuid,
+          //     })
+          //   }
+          //   if (res.characteristics[i].properties.write) {
+          //     that.setData({
+          //       writeServicweId: that.data.BleServices[0].uuid,
+          //       writeCharacteristicsId: res.characteristics[i].uuid,
+          //     })
+          //   } else if (res.characteristics[i].properties.read) {
+          //     that.setData({
+          //       readServicweId: that.data.BleServices[0].uuid,
+          //       readCharacteristicsId: res.characteristics[i].uuid,
+          //     })
+          //   }
+          // }
+        },
+        fail: function () {
+          console.log("fail");
+        },
+        complete: function () {
+          console.log("complete");
+        }
+      })    
+    }
+  }
   // 获取已绑定蓝牙设备:function(){
   //   var that = this;
   //   wx.getConnectedBluetoothDevices({
