@@ -21,7 +21,7 @@
 .ShowSearchDevice2{
   display: flex;
   width: 100%;
-  flex-direction: white;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
@@ -35,4 +35,21 @@
   font-size: 10px;
   color: gainsboro;
   margin-left: 20rpx;
+}
+.FunctionView{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 5px 0;
+  border-bottom: 1px solid #ededed;
+}
+.ReadShowText{
+  display: flex;
+  height: 200rpx;
+  font-size: 16px;
+  color: gray;
+  margin-top: 30rpx;
+  margin-bottom: 20rpx;
 }

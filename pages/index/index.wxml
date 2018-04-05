@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<view class="{{BleConnectStatus==false?'SearchLayout':'HideLayout'}}">
+<view class="{{BleConnectStatus==0?'SearchLayout':'HideLayout'}}">
   <button bindtap='点击搜索蓝牙设备'>搜索蓝牙设备</button>
   <block wx:for="{{BleDevices}}" wx:key="RSSI">
     <view class='ShowSearchDevice' data-numid="{{index}}" bindtap='点击指定设备'>
@@ -11,17 +11,40 @@
     </view>
   </block>
 </view>
-<view class="{{BleConnectStatus==true?'SearchLayout':'HideLayout'}}">
-  <view class='ShowSearchDevice2'>
-    <text class='DeviceText2'>通知服务UUID:{{notifyServicweId}}</text>
-    <text class='DeviceText2'>通知服务特征值:{{notifyCharacteristicsId}}</text>  
-  </view>
-  <view class='ShowSearchDevice2'>
-    <text class='DeviceText2'>写服务UUID:{{writeServicweId}}</text>
-    <text class='DeviceText2'>写服务特征值:{{writeCharacteristicsId}}</text>  
-  </view>
-  <view class='ShowSearchDevice2'>
-    <text class='DeviceText2'>读服务UUID:{{readServicweId}}</text>
-    <text class='DeviceText2'>读服务特征值:{{readCharacteristicsId}}</text>  
-  </view>
+<view class="{{BleConnectStatus==1?'SearchLayout':'HideLayout'}}">
+  <button bindtap='点击断开连接'>断开连接</button>
+  <block wx:for="{{ConnectDeviceService}}" wx:key="uuid">
+     <view class='ShowSearchDevice' data-numid="{{index}}" bindtap='点击指定服务'>
+      <text class='DeviceText1'>服务UUID:{{item.uuid}}</text>
+      <view class='ShowSearchDevice2'>
+          <text class='DeviceText2'>可用服务:</text>
+          <text class="{{item.properties.indicate==true?'DeviceText2':'HideLayout'}}"> Indicate</text>
+          <text class="{{item.properties.notify==true?'DeviceText2':'HideLayout'}}"> Notify</text>
+          <text class="{{item.properties.read==true?'DeviceText2':'HideLayout'}}"> Read</text>
+          <text class="{{item.properties.write==true?'DeviceText2':'HideLayout'}}"> Write</text>
+      </view>
+    </view>
+  </block>
+</view>
+<view class="{{BleConnectStatus==2?'SearchLayout':'HideLayout'}}">
+   <button bindtap='点击返回'>返回</button>
+   <text class='DeviceText1'>该服务UUID:{{SelectConnectServices.uuid}}</text>
+   <!-- Indicate -->
+   <view class="{{SelectConnectServices.properties.indicate==true?'FunctionView':'HideLayout'}}">
+      <text class='DeviceText1'>Indicate</text>
+   </view>
+   <!-- Notify -->
+   <view class="{{SelectConnectServices.properties.notify==true?'FunctionView':'HideLayout'}}">
+      <text class='DeviceText1'>Notify</text>
+   </view>
+   <!-- Read -->
+   <view class="{{SelectConnectServices.properties.read==true?'FunctionView':'HideLayout'}}">
+      <text class='DeviceText1'>Read</text>
+      <textarea class='ReadShowText' auto-height value="{{BleReadData}}"/>
+   </view>
+   <!-- Write -->
+   <view class="{{SelectConnectServices.properties.write==true?'FunctionView':'HideLayout'}}">
+      <text class='DeviceText1'>Write</text>
+      <button bindtap='点击打印机换行'>打印机换行</button>
+   </view>
 </view>
