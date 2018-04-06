@@ -190,9 +190,9 @@ Page({
       BleConnectStatus:2,
     })
   },
-  点击打印机换行:function(e){
+  点击打印机测试:function(e){
     var that = this;
-    var hex = '0A0D0D0A'
+    var hex = '48656C6C6F59590A0D0A0D'
     var typedArray = new Uint8Array(hex.match(/[\da-f]{2}/gi).map(function (h) {
       return parseInt(h, 16)
     }))
@@ -217,5 +217,13 @@ Page({
         // complete
       }
     })  
+  },
+  点击返回:function(e){
+    var that = this;
+    that.setData({
+      SelectConnectServices: null,
+      SelectConnectServicesPostion: 0,
+      BleConnectStatus: 1,
+    })
   }
 })

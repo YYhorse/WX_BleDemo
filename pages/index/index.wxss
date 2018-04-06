@@ -33,7 +33,7 @@
 }
 .DeviceText2{
   font-size: 10px;
-  color: gainsboro;
+  color: #65779D;
   margin-left: 20rpx;
 }
 .FunctionView{
