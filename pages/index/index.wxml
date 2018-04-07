@@ -28,7 +28,7 @@
 </view>
 <view class="{{BleConnectStatus==2?'SearchLayout':'HideLayout'}}">
    <button bindtap='点击返回'>返回</button>
-   <text class='DeviceText1'>服务UUID:{{SelectConnectServices.uuid}}</text>
+   <text class='DeviceText1'>ServiceId:{{SelectConnectServices.serviceuuid}}\nCharacteristicId:{{SelectConnectServices.uuid}}</text>
    <text class='DeviceText1'>可用资源:</text>
    <!-- Indicate -->
    <view class="{{SelectConnectServices.properties.indicate==true?'FunctionView':'HideLayout'}}">

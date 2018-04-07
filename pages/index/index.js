@@ -4,9 +4,9 @@ Page({
     BleConnectStatus:0,
     BleDevices:[],
     ConnectDevices:null,            //已连接设备信息
-    ConnectDeviceService:[],      //已连接设备的可用服务
+    ConnectDeviceService:[],        //已连接设备的可用服务
     SelectConnectServices:null,     //选择已连接服务
-    SelectConnectServicesPostion:0, //已选服务坐标
+    CharacteristicsIndex:0,        //特征值定位
     
     BleReadData:'',                 //蓝牙接收数据
     BleWriteData:''               //蓝牙发送数据   
@@ -161,32 +161,64 @@ Page({
     })  
   },
   获取指定蓝牙特征值:function(){
+    this.data.CharacteristicsIndex = 0;
+    this.data.ConnectDeviceService = [];
+    this.循环获取特征值();
+  },
+  循环获取特征值:function(){
     var that = this;
-    var TempDeviceService = [];
-    for (var i = 0; i < that.data.ConnectDevices.advertisServiceUUIDs.length;i++){
+    if (that.data.CharacteristicsIndex < that.data.ConnectDevices.advertisServiceUUIDs.length){
       wx.getBLEDeviceCharacteristics({
         deviceId: that.data.ConnectDevices.deviceId,
-        serviceId: that.data.ConnectDevices.advertisServiceUUIDs[i],
+        serviceId: that.data.ConnectDevices.advertisServiceUUIDs[that.data.CharacteristicsIndex],
         success: function (res) {
-          for(var j=0;j<res.characteristics.length;j++)
-            TempDeviceService.push(res.characteristics[j]);
-          that.setData({ ConnectDeviceService: TempDeviceService })  
+          for (var j = 0; j < res.characteristics.length; j++) {
+              var TempCharacteristics = res.characteristics[j];
+              TempCharacteristics["serviceuuid"] = that.data.ConnectDevices.advertisServiceUUIDs[that.data.CharacteristicsIndex];
+              that.data.ConnectDeviceService.push(TempCharacteristics);
+          }
+          that.data.CharacteristicsIndex++;
+          that.循环获取特征值();
         },
         fail: function () {
           console.log("fail");
         }
-      })    
+      })
     }
-    console.log("服务属性=");
-    console.log(TempDeviceService);
+    else{
+      that.setData({ ConnectDeviceService: that.data.ConnectDeviceService });  
+      console.log("特征值:");
+      console.log(that.data.ConnectDeviceService);
+    }
   },
+
+    // for (var i = 0; i < that.data.ConnectDevices.advertisServiceUUIDs.length;i++){
+    //   var tempServiceUUID = that.data.ConnectDevices.advertisServiceUUIDs[i];
+    //   wx.getBLEDeviceCharacteristics({
+    //     deviceId: that.data.ConnectDevices.deviceId,
+    //     serviceId: tempServiceUUID,
+    //     success: function (res) {
+    //       for(var j=0;j<res.characteristics.length;j++){
+    //         var TempCharacteristics = res.characteristics[j];
+    //         TempCharacteristics["serviceuuid"] = tempServiceUUID;
+    //         TempDeviceService.push(TempCharacteristics);
+    //         console.log(tempServiceUUID);
+    //       }
+    //       that.setData({ ConnectDeviceService: TempDeviceService });  
+    //       console.log("服务属性=");
+    //       console.log(TempDeviceService);
+    //     },
+    //     fail: function () {
+    //       console.log("fail");
+    //     }
+    //   })    
+    // }
   点击指定服务:function(e){
     var that = this;
     var Index = e.currentTarget.dataset.numid;
     console.log(that.data.ConnectDeviceService[Index]);
     that.setData({ 
       SelectConnectServices: that.data.ConnectDeviceService[Index],
-      SelectConnectServicesPostion: Index,
       BleConnectStatus:2,
     })
   },
@@ -201,7 +233,7 @@ Page({
     console.log(buffer1)
     wx.writeBLECharacteristicValue({
       deviceId: that.data.ConnectDevices.deviceId,
-      serviceId: that.data.ConnectDevices.advertisServiceUUIDs[0],
+      serviceId: that.data.SelectConnectServices.serviceuuid,
       characteristicId: that.data.SelectConnectServices.uuid,
       // 这里的value是ArrayBuffer类型  
       value: buffer1,
@@ -222,7 +254,6 @@ Page({
     var that = this;
     that.setData({
       SelectConnectServices: null,
-      SelectConnectServicesPostion: 0,
       BleConnectStatus: 1,
     })
   }
