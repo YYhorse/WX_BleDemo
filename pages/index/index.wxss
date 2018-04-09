@@ -53,3 +53,12 @@
   margin-top: 30rpx;
   margin-bottom: 20rpx;
 }
+.NotifyShowText{
+  display: flex;
+  position: fixed;
+  height: 200rpx;
+  left: 0px;
+  bottom: 0px;
+  z-index: 50;
+  font-size: 16px;
+}

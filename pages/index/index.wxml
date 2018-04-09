@@ -37,6 +37,8 @@
    <!-- Notify -->
    <view class="{{SelectConnectServices.properties.notify==true?'FunctionView':'HideLayout'}}">
       <text class='DeviceText1'>Notify</text>
+      <button bindtap='点击Notify功能'>{{NotifyStatus==true?'关闭Notify功能':'启动Notify功能'}}</button>
+      <textarea class="{{NotifyStatus==true?'NotifyShowText':'HideLayout'}}" auto-height value="{{BleNotifyData}}"/>
    </view>
    <!-- Read -->
    <view class="{{SelectConnectServices.properties.read==true?'FunctionView':'HideLayout'}}">
@@ -47,5 +49,7 @@
    <view class="{{SelectConnectServices.properties.write==true?'FunctionView':'HideLayout'}}">
       <text class='DeviceText1'>Write</text>
       <button bindtap='点击打印机测试'>打印机测试</button>
+      <button bindtap='点击设置出米'>设置出米100g</button>
+      <button bindtap='点击模拟OK'>模拟点击OK</button>
    </view>
 </view>

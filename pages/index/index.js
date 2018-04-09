@@ -6,10 +6,12 @@ Page({
     ConnectDevices:null,            //已连接设备信息
     ConnectDeviceService:[],        //已连接设备的可用服务
     SelectConnectServices:null,     //选择已连接服务
-    CharacteristicsIndex:0,        //特征值定位
+    CharacteristicsIndex:0,         //特征值定位
+    NotifyStatus:false,             //Notify功能
     
-    BleReadData:'',                 //蓝牙接收数据
-    BleWriteData:''               //蓝牙发送数据   
+    BleReadData:'',                //蓝牙接收数据
+    BleNotifyData:'',              //Notify数据
+    BleWriteData:''                //蓝牙发送数据   
   },
   // onLoad: function () {},
   开启蓝牙连接:function(){
@@ -81,6 +83,7 @@ Page({
   开始搜索蓝牙设备:function(){
     var that = this;
     wx.showLoading({  title: '蓝牙搜索' });
+    that.setData({ BleDevices:[]});
     wx.startBluetoothDevicesDiscovery({
       services: [],
       allowDuplicatesKey: false,
@@ -191,28 +194,6 @@ Page({
       console.log(that.data.ConnectDeviceService);
     }
   },
-
-    // for (var i = 0; i < that.data.ConnectDevices.advertisServiceUUIDs.length;i++){
-    //   var tempServiceUUID = that.data.ConnectDevices.advertisServiceUUIDs[i];
-    //   wx.getBLEDeviceCharacteristics({
-    //     deviceId: that.data.ConnectDevices.deviceId,
-    //     serviceId: tempServiceUUID,
-    //     success: function (res) {
-    //       for(var j=0;j<res.characteristics.length;j++){
-    //         var TempCharacteristics = res.characteristics[j];
-    //         TempCharacteristics["serviceuuid"] = tempServiceUUID;
-    //         TempDeviceService.push(TempCharacteristics);
-    //         console.log(tempServiceUUID);
-    //       }
-    //       that.setData({ ConnectDeviceService: TempDeviceService });  
-    //       console.log("服务属性=");
-    //       console.log(TempDeviceService);
-    //     },
-    //     fail: function () {
-    //       console.log("fail");
-    //     }
-    //   })    
-    // }
   点击指定服务:function(e){
     var that = this;
     var Index = e.currentTarget.dataset.numid;
@@ -250,11 +231,81 @@ Page({
       }
     })  
   },
+  点击设置出米:function(e){
+    var that = this;
+    var hex = '5AA50700070800640073'
+    var typedArray = new Uint8Array(hex.match(/[\da-f]{2}/gi).map(function (h) {  return parseInt(h, 16)}))
+    var buffer1 = typedArray.buffer
+    wx.writeBLECharacteristicValue({
+      deviceId: that.data.ConnectDevices.deviceId,
+      serviceId: that.data.SelectConnectServices.serviceuuid,
+      characteristicId: that.data.SelectConnectServices.uuid,
+      value: buffer1,
+      success: function (res) {
+        console.log("success  指令发送成功");
+      },
+      fail: function (res) {
+        console.log(res);
+      },
+    })  
+  },
+  点击模拟OK:function(e){
+    var that = this;
+    var hex = '5AA5050008010009'
+    var typedArray = new Uint8Array(hex.match(/[\da-f]{2}/gi).map(function (h) { return parseInt(h, 16) }))
+    var buffer1 = typedArray.buffer
+    wx.writeBLECharacteristicValue({
+      deviceId: that.data.ConnectDevices.deviceId,
+      serviceId: that.data.SelectConnectServices.serviceuuid,
+      characteristicId: that.data.SelectConnectServices.uuid,
+      value: buffer1,
+      success: function (res) {
+        console.log("success  指令发送成功");
+      },
+      fail: function (res) {
+        console.log(res);
+      },
+    })  
+  },
+  点击Notify功能:function(e){
+    var that = this;
+    that.setData({ NotifyStatus: !that.data.NotifyStatus});
+    wx.notifyBLECharacteristicValueChange({
+      state: that.data.NotifyStatus, // 启用 notify 功能  
+      deviceId: that.data.ConnectDevices.deviceId,
+      serviceId: that.data.SelectConnectServices.serviceuuid,
+      characteristicId: that.data.SelectConnectServices.uuid,
+      success: function (res) {
+        console.log('收到Notify', res.errMsg);
+        setTimeout(function () {
+          console.log('延迟1000MS');
+          console.log('获取notify');
+          wx.onBLECharacteristicValueChange(function (res) {
+            const hex = that.buf2hex(res.value);
+            console.log(hex);
+            that.data.BleNotifyData+=hex;
+            that.setData({ BleNotifyData: that.data.BleNotifyData})
+          })
+        }, 1000);
+      },
+      fail: function () {
+        console.log('启用notify功能失败！');
+      },
+    })
+  },
+  
   点击返回:function(e){
     var that = this;
     that.setData({
       SelectConnectServices: null,
       BleConnectStatus: 1,
     })
+  },
+
+   /**
+    * ArrayBuffer 转换为  Hex
+    */
+    buf2hex: function (buffer) { // buffer is an ArrayBuffer
+    return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join(' ');
   }
 })
